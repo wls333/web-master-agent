@@ -4,9 +4,15 @@ import { stdin as input, stdout as output } from "node:process";
 import { SessionStore } from "./query/session-store.mjs";
 import { CloudToolRegistry } from "./query/cloud-tools.mjs";
 import { QueryEngine } from "./query/query-engine.mjs";
+import { createDeepSeekModel } from "./query/deepseek-model.mjs";
+import { loadLocalEnv } from "./query/env-loader.mjs";
 
+await loadLocalEnv();
 const API = process.env.LIGHTOPS_API || "http://127.0.0.1:3717";
 const rl = readline.createInterface({ input, output });
+const model = process.env.DEEPSEEK_API_KEY
+  ? createDeepSeekModel({ apiKey: process.env.DEEPSEEK_API_KEY })
+  : undefined;
 
 const state = {
   last: null,
@@ -17,6 +23,7 @@ const toolRegistry = new CloudToolRegistry({ apiBase: API });
 const queryEngine = await new QueryEngine({
   sessionStore,
   toolRegistry,
+  model,
   sessionId: await sessionStore.latestSessionId()
 }).restore();
 
@@ -100,6 +107,7 @@ function render() {
   const project = s.project || {};
   header("LightOps Cloud Agent TUI");
   row("Project", `${project.name || project.id || "unconfigured"} (${project.runtime || "unknown"})`);
+  row("Model", process.env.DEEPSEEK_API_KEY ? `deepseek:${process.env.DEEPSEEK_MODEL || "deepseek-chat"}` : "local-rule");
   row("Health", scan ? `${scoreColor(scan.score)}${scan.score}${colors.reset} ${scan.summary}` : "No scan yet");
   row("Incidents", String(s.incidents?.length || 0));
   row("Deployments", String(s.deployments?.length || 0));

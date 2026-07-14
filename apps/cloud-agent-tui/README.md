@@ -26,6 +26,35 @@ Windows PowerShell:
 .\bin\lightops.ps1
 ```
 
+## Real model
+
+The TUI uses the local rule model by default. To enable DeepSeek, provide a local API key through an environment variable:
+
+```bash
+export DEEPSEEK_API_KEY="your-key"
+node apps/cloud-agent-tui/src/main.mjs
+```
+
+PowerShell:
+
+```powershell
+$env:DEEPSEEK_API_KEY="your-key"
+node apps/cloud-agent-tui/src/main.mjs
+```
+
+You can also store local-only secrets in `.lightops/tui.env`, which is ignored by git:
+
+```text
+DEEPSEEK_API_KEY=your-key
+DEEPSEEK_MODEL=deepseek-chat
+```
+
+Optional settings:
+
+- `DEEPSEEK_BASE_URL`, default `https://api.deepseek.com`
+- `DEEPSEEK_MODEL`, default `deepseek-chat`
+- `DEEPSEEK_TEMPERATURE`, default `0.2`
+
 Commands:
 
 - `/scan`

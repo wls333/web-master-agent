@@ -2,11 +2,12 @@ import { localRuleModel } from "./local-rule-model.mjs";
 import { printBlock, typewriter } from "./typewriter.mjs";
 
 export class QueryEngine {
-  constructor({ sessionStore, toolRegistry, sessionId, maxTurns = 6 }) {
+  constructor({ sessionStore, toolRegistry, sessionId, maxTurns = 6, model = localRuleModel }) {
     this.sessionStore = sessionStore;
     this.toolRegistry = toolRegistry;
     this.sessionId = sessionId;
     this.maxTurns = maxTurns;
+    this.model = model;
     this.messages = [];
     this.turnCount = 0;
     this.totalUsage = { inputChars: 0, outputChars: 0, toolCalls: 0 };
@@ -56,7 +57,11 @@ export class QueryEngine {
         transition: state.transition
       });
 
-      for await (const event of localRuleModel({ messages: preprocessed, toolResults: state.toolResults || [] })) {
+      for await (const event of this.model({
+        messages: preprocessed,
+        toolResults: state.toolResults || [],
+        tools: this.toolRegistry.getToolDefinitions()
+      })) {
         if (event.type === "assistant_text") {
           assistantText += event.content;
           await typewriter(event.content);
