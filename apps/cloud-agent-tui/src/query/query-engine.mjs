@@ -1,13 +1,15 @@
 import { localRuleModel } from "./local-rule-model.mjs";
 import { printBlock, typewriter } from "./typewriter.mjs";
+import { ContextEngine } from "./context/context-engine.mjs";
 
 export class QueryEngine {
-  constructor({ sessionStore, toolRegistry, sessionId, maxTurns = 6, model = localRuleModel }) {
+  constructor({ sessionStore, toolRegistry, sessionId, maxTurns = 6, model = localRuleModel, contextEngine = new ContextEngine() }) {
     this.sessionStore = sessionStore;
     this.toolRegistry = toolRegistry;
     this.sessionId = sessionId;
     this.maxTurns = maxTurns;
     this.model = model;
+    this.contextEngine = contextEngine;
     this.messages = [];
     this.turnCount = 0;
     this.totalUsage = { inputChars: 0, outputChars: 0, toolCalls: 0 };
@@ -46,7 +48,14 @@ export class QueryEngine {
         return { reason: "max_turns" };
       }
 
-      const preprocessed = this.preprocess(state.messages);
+      const toolDefinitions = this.toolRegistry.getToolDefinitions();
+      const context = await this.contextEngine.build({
+        messages: state.messages,
+        tools: toolDefinitions,
+        sessionId: this.sessionId
+      });
+      this.lastContextStats = context.contextStats;
+      const preprocessed = this.preprocess(context.messages);
       const toolResults = [];
       let needsFollowUp = false;
       let assistantText = "";
@@ -54,13 +63,17 @@ export class QueryEngine {
       await this.sessionStore.append(this.sessionId, {
         type: "turn_start",
         turn: state.turnCount + 1,
-        transition: state.transition
+        transition: state.transition,
+        contextStats: context.contextStats
       });
 
       for await (const event of this.model({
         messages: preprocessed,
         toolResults: state.toolResults || [],
-        tools: this.toolRegistry.getToolDefinitions()
+        tools: toolDefinitions,
+        systemPrompt: context.systemPrompt,
+        systemPromptBlocks: context.systemPromptBlocks,
+        contextStats: context.contextStats
       })) {
         if (event.type === "assistant_text") {
           assistantText += event.content;

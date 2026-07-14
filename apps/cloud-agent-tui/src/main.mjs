@@ -90,6 +90,10 @@ async function dispatch(line) {
     case "config":
       await showConfig();
       return;
+    case "/context":
+    case "context":
+      showContext();
+      return;
     default:
       await queryEngine.submitMessage(line);
       await refresh();
@@ -127,7 +131,7 @@ function render() {
     console.log(`${colors.gray}${item.createdAt}${colors.reset} ${item.action} ${item.status}`);
   }
   divider();
-  console.log(`${colors.dim}/scan  /incident create  /fix  /deploy  /rollback  /audit  /config  /help  /quit${colors.reset}`);
+  console.log(`${colors.dim}/scan  /incident create  /fix  /deploy  /rollback  /audit  /config  /context  /help  /quit${colors.reset}`);
   console.log("");
 }
 
@@ -228,6 +232,15 @@ async function showConfig() {
   console.log(JSON.stringify(config, null, 2));
 }
 
+function showContext() {
+  const stats = queryEngine.lastContextStats;
+  if (!stats) {
+    console.log("No context has been built yet. Ask a natural language question first.");
+    return;
+  }
+  console.log(JSON.stringify(stats, null, 2));
+}
+
 function help() {
   console.log(`
 Commands:
@@ -239,6 +252,7 @@ Commands:
   /rollback          Roll back selected deployment
   /audit             Show audit events
   /config            Show redacted config
+  /context           Show latest context budget and memory recall stats
   natural language   Ask the agent, e.g. "帮我体检" or "支付失败，生成修复任务"
   /refresh           Refresh dashboard
   /quit              Exit

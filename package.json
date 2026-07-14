@@ -12,7 +12,8 @@
     "tui:smoke": "node apps/cloud-agent-tui/scripts/tui-smoke.mjs",
     "query:smoke": "node apps/cloud-agent-tui/scripts/query-engine-smoke.mjs",
     "deepseek:smoke": "node apps/cloud-agent-tui/scripts/deepseek-model-smoke.mjs",
-    "tools:smoke": "node apps/cloud-agent-tui/scripts/tool-system-smoke.mjs"
+    "tools:smoke": "node apps/cloud-agent-tui/scripts/tool-system-smoke.mjs",
+    "context:smoke": "node apps/cloud-agent-tui/scripts/context-engine-smoke.mjs"
   },
   "engines": {
     "node": ">=20"

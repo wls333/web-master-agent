@@ -93,3 +93,12 @@ Tool system:
 - Tool output is budgeted before it is written back into the conversation.
 
 See `docs/tool-system-and-query-loop-design.md` for the full design.
+
+Context engineering:
+
+- System prompt is assembled from static and dynamic blocks.
+- Project memory is loaded from `.lightops/memory/MEMORY.md` and related memory files.
+- Tool results are microcompacted before model calls.
+- Approximate token budgets are tracked per turn and visible with `/context`.
+
+See `docs/context-engineering-design.md` for the full design.

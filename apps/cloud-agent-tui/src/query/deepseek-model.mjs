@@ -10,7 +10,7 @@ export function createDeepSeekModel({
 } = {}) {
   if (!apiKey) throw new Error("DEEPSEEK_API_KEY is required");
 
-  return async function* deepSeekModel({ messages, toolResults = [], tools = [] }) {
+  return async function* deepSeekModel({ messages, toolResults = [], tools = [], systemPrompt }) {
     const response = await fetchImpl(`${baseUrl.replace(/\/$/, "")}/chat/completions`, {
       method: "POST",
       headers: {
@@ -21,7 +21,7 @@ export function createDeepSeekModel({
         model,
         temperature,
         stream: true,
-        messages: toDeepSeekMessages(messages, toolResults),
+        messages: toDeepSeekMessages(messages, toolResults, systemPrompt),
         tools: tools.map(toOpenAITool),
         tool_choice: tools.length ? "auto" : undefined
       })
@@ -46,10 +46,10 @@ export function createDeepSeekModel({
   };
 }
 
-function toDeepSeekMessages(messages, toolResults) {
+function toDeepSeekMessages(messages, toolResults, systemPrompt) {
   const system = {
     role: "system",
-    content: [
+    content: systemPrompt || [
       "You are LightOps Cloud Agent TUI.",
       "Your job is to help a solo developer or small team operate production services.",
       "Use tools whenever live cloud state, diagnostics, incident creation, fix-task generation, or rollback evidence is needed.",
