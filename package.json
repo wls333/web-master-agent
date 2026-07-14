@@ -9,7 +9,8 @@
     "check": "node --check apps/cloud-agent/src/server.mjs",
     "smoke": "node apps/cloud-agent/scripts/smoke.mjs",
     "acceptance": "node scripts/acceptance-smoke.mjs",
-    "tui:smoke": "node apps/cloud-agent-tui/scripts/tui-smoke.mjs"
+    "tui:smoke": "node apps/cloud-agent-tui/scripts/tui-smoke.mjs",
+    "query:smoke": "node apps/cloud-agent-tui/scripts/query-engine-smoke.mjs"
   },
   "engines": {
     "node": ">=20"

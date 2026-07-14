@@ -336,6 +336,48 @@ TUI -> REST API -> Cloud Agent services -> Policy/Audit/Store
 
 TUI 不是新的生产执行器，它只是终端客户端。
 
+### 7.0.1 QueryEngine 对话运转机制
+
+TUI 内置一个轻量 QueryEngine，用于模仿 Claude Code/Codex 的对话运转方式。当前阶段不直接接真实大模型，而是使用本地规则模型模拟 AI 决策；后续接入 LLM Provider 时，QueryEngine 的 loop、工具调用、JSONL transcript 和流式输出机制不需要推倒重来。
+
+QueryEngine 每轮包含：
+
+1. 用户消息写入会话。
+2. 上下文预处理：工具结果截断、microcompact、autoCompact。
+3. 流式生成 assistant text。
+4. 检测 tool_use。
+5. 调用 Cloud Agent 工具。
+6. 工具结果写入消息。
+7. 如果需要 follow-up，则继续下一轮。
+8. 无工具调用时终止。
+9. 所有事件追加写入 JSONL transcript。
+
+当前已支持工具：
+
+- `cloud.state`
+- `cloud.scan`
+- `cloud.incident.create`
+- `cloud.localFixTask.create`
+- `cloud.deployments.list`
+- `cloud.rollback.latest`
+
+Transcript 存储路径：
+
+```text
+.lightops/tui-sessions/<session-id>.jsonl
+```
+
+每行是一个 JSON 事件，包含：
+
+- session_start
+- message
+- turn_start
+- tool_use
+- tool_result
+- termination
+
+这让 TUI 具备多轮会话恢复、审计和调试基础。
+
 ## 7.1 Web UI 规格
 
 Web UI 是产品最重要的入口。它不是附属调试页面，而是面向非 Linux 用户的生产控制台。

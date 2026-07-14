@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 import readline from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
+import { SessionStore } from "./query/session-store.mjs";
+import { CloudToolRegistry } from "./query/cloud-tools.mjs";
+import { QueryEngine } from "./query/query-engine.mjs";
 
 const API = process.env.LIGHTOPS_API || "http://127.0.0.1:3717";
 const rl = readline.createInterface({ input, output });
@@ -9,6 +12,13 @@ const state = {
   last: null,
   logs: []
 };
+const sessionStore = new SessionStore();
+const toolRegistry = new CloudToolRegistry({ apiBase: API });
+const queryEngine = await new QueryEngine({
+  sessionStore,
+  toolRegistry,
+  sessionId: await sessionStore.latestSessionId()
+}).restore();
 
 const colors = {
   reset: "\x1b[0m",
@@ -72,7 +82,8 @@ async function dispatch(line) {
       await showConfig();
       return;
     default:
-      log(`Unknown command: ${command}. Type /help`, "yellow");
+      await queryEngine.submitMessage(line);
+      await refresh();
   }
 }
 
@@ -218,6 +229,7 @@ Commands:
   /rollback          Roll back selected deployment
   /audit             Show audit events
   /config            Show redacted config
+  natural language   Ask the agent, e.g. "帮我体检" or "支付失败，生成修复任务"
   /refresh           Refresh dashboard
   /quit              Exit
 `);
