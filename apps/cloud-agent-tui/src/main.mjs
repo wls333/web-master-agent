@@ -6,6 +6,7 @@ import { CloudToolRegistry } from "./query/cloud-tools.mjs";
 import { QueryEngine } from "./query/query-engine.mjs";
 import { createDeepSeekModel } from "./query/deepseek-model.mjs";
 import { loadLocalEnv } from "./query/env-loader.mjs";
+import { registerShellTools } from "./query/shell-command-tool.mjs";
 
 await loadLocalEnv();
 const API = process.env.LIGHTOPS_API || "http://127.0.0.1:3717";
@@ -20,6 +21,7 @@ const state = {
 };
 const sessionStore = new SessionStore();
 const toolRegistry = new CloudToolRegistry({ apiBase: API });
+registerShellTools(toolRegistry);
 const queryEngine = await new QueryEngine({
   sessionStore,
   toolRegistry,

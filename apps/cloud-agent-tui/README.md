@@ -83,3 +83,13 @@ The TUI runs a Claude Code style query loop:
 - append tool results
 - continue until no follow-up is needed
 - persist transcript as JSONL under `.lightops/tui-sessions`
+
+Tool system:
+
+- Cloud tools are exposed through a unified `ToolRegistry`.
+- Real models receive JSON schemas for each tool.
+- `shell.read` is available as a conservative read-only diagnostic command tool.
+- Complex shell syntax, destructive commands, publishing commands, and unknown commands are rejected.
+- Tool output is budgeted before it is written back into the conversation.
+
+See `docs/tool-system-and-query-loop-design.md` for the full design.
