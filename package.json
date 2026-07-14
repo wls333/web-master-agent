@@ -1,0 +1,17 @@
+{
+  "name": "lightops-agent",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "cloud-agent": "node apps/cloud-agent/src/server.mjs",
+    "tui": "node apps/cloud-agent-tui/src/main.mjs",
+    "check": "node --check apps/cloud-agent/src/server.mjs",
+    "smoke": "node apps/cloud-agent/scripts/smoke.mjs",
+    "acceptance": "node scripts/acceptance-smoke.mjs",
+    "tui:smoke": "node apps/cloud-agent-tui/scripts/tui-smoke.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

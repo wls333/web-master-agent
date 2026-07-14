@@ -1,0 +1,21 @@
+{
+  "agentName": "lightops-cloud-agent",
+  "bindHost": "127.0.0.1",
+  "port": 3717,
+  "dataDir": ".lightops/cloud-agent",
+  "controlPlaneUrl": "",
+  "project": {
+    "id": "demo-java-service",
+    "name": "Demo Java Service",
+    "runtime": "agent-container",
+    "healthcheckUrl": "http://127.0.0.1:8080/actuator/health",
+    "logPaths": [
+      "./logs/app.log"
+    ]
+  },
+  "deployment": {
+    "allowRealDeploy": false,
+    "defaultRuntime": "agent-container",
+    "keepRevisions": 5
+  }
+}

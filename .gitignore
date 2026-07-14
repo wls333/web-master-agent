@@ -1,0 +1,7 @@
+.lightops/
+.lightops.cloud-agent.json
+.lightops-cloud-agent.*.log
+node_modules/
+*.log
+.agents/
+.codex/

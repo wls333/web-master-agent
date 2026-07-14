@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LightOps Cloud Agent</title>
+    <link rel="stylesheet" href="/assets/app.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="topbar">
+        <div>
+          <p class="eyebrow">LightOps Cloud Agent</p>
+          <h1>云端生产控制台</h1>
+        </div>
+        <button id="scanBtn" class="primary">一键体检</button>
+      </section>
+
+      <section class="grid status-grid">
+        <article class="panel hero-panel">
+          <div class="panel-head">
+            <span>当前项目</span>
+            <strong id="projectName">加载中</strong>
+          </div>
+          <div class="score-row">
+            <div id="score" class="score">--</div>
+            <div>
+              <p id="summary" class="summary">等待首次体检</p>
+              <p id="agentInfo" class="muted">Agent 初始化中</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <span>事故</span>
+            <strong id="incidentCount">0</strong>
+          </div>
+          <button id="bugBtn" class="secondary">提交业务 Bug</button>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <span>部署</span>
+            <strong id="deployCount">0</strong>
+          </div>
+          <button id="deployBtn" class="secondary">模拟部署</button>
+          <button id="rollbackBtn" class="secondary subtle">回滚最近部署</button>
+        </article>
+      </section>
+
+      <section class="two-col">
+        <article class="panel">
+          <div class="panel-head">
+            <span>诊断发现</span>
+            <strong>Analyzers</strong>
+          </div>
+          <div id="findings" class="list empty">暂无体检结果</div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <span>最近事件</span>
+            <strong>Audit</strong>
+          </div>
+          <div id="audit" class="list empty">暂无事件</div>
+        </article>
+      </section>
+
+      <section class="two-col">
+        <article class="panel">
+          <div class="panel-head">
+            <span>部署记录</span>
+            <strong>Revisions</strong>
+          </div>
+          <div id="deployments" class="list empty">暂无部署</div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <span>事故列表</span>
+            <strong>Incidents</strong>
+          </div>
+          <button id="localFixBtn" class="secondary">生成本地修复任务</button>
+          <div id="incidents" class="list empty">暂无事故</div>
+        </article>
+      </section>
+
+      <section class="two-col">
+        <article class="panel">
+          <div class="panel-head">
+            <span>本地修复任务</span>
+            <strong>LocalFixTask</strong>
+          </div>
+          <div id="localFixTasks" class="list empty">暂无本地修复任务</div>
+        </article>
+        <article class="panel">
+          <div class="panel-head">
+            <span>验收接口</span>
+            <strong>API</strong>
+          </div>
+          <div class="item">
+            <div class="item-title">
+              <span>核心链路</span>
+              <span class="badge ok">ready</span>
+            </div>
+            <p>scan -> incident -> LocalFixTask -> DeploySpec -> rollback -> audit</p>
+          </div>
+        </article>
+      </section>
+
+      <section class="two-col">
+        <article class="panel">
+          <div class="panel-head">
+            <span>业务 Bug 向导</span>
+            <strong>Incident</strong>
+          </div>
+          <label>现象</label>
+          <select id="symptom">
+            <option value="接口 500">接口 500</option>
+            <option value="页面打不开">页面打不开</option>
+            <option value="登录失败">登录失败</option>
+            <option value="下单失败">下单失败</option>
+            <option value="支付异常">支付异常</option>
+            <option value="CPU 或内存过高">CPU 或内存过高</option>
+          </select>
+          <label>补充描述</label>
+          <textarea id="description" rows="4" placeholder="例如：刚发布后 checkout 接口开始返回 500"></textarea>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <span>DeploySpec</span>
+            <strong>Dry Run</strong>
+          </div>
+          <label>镜像</label>
+          <input id="image" value="registry.example.com/payment-api" />
+          <label>Tag</label>
+          <input id="tag" value="1.0.0" />
+          <label>健康检查 URL</label>
+          <input id="healthUrl" value="http://127.0.0.1:8080/actuator/health" />
+        </article>
+      </section>
+    </main>
+
+    <script src="/assets/app.js"></script>
+  </body>
+</html>

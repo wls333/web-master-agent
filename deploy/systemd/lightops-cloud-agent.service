@@ -1,0 +1,23 @@
+[Unit]
+Description=LightOps Cloud Agent
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=lightops
+Group=lightops
+WorkingDirectory=/opt/lightops/agent
+ExecStart=/usr/bin/env node apps/cloud-agent/src/server.mjs
+Restart=always
+RestartSec=5
+Environment=NODE_ENV=production
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/var/lib/lightops /opt/lightops/agent
+
+[Install]
+WantedBy=multi-user.target
