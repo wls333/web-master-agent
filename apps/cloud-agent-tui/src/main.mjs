@@ -7,6 +7,7 @@ import { QueryEngine } from "./query/query-engine.mjs";
 import { createDeepSeekModel } from "./query/deepseek-model.mjs";
 import { loadLocalEnv } from "./query/env-loader.mjs";
 import { registerShellTools } from "./query/shell-command-tool.mjs";
+import { registerAgentTools } from "./query/agents/agent-tools.mjs";
 
 await loadLocalEnv();
 const API = process.env.LIGHTOPS_API || "http://127.0.0.1:3717";
@@ -22,6 +23,7 @@ const state = {
 const sessionStore = new SessionStore();
 const toolRegistry = new CloudToolRegistry({ apiBase: API });
 registerShellTools(toolRegistry);
+const agentCoordinator = registerAgentTools(toolRegistry);
 const queryEngine = await new QueryEngine({
   sessionStore,
   toolRegistry,
@@ -94,6 +96,10 @@ async function dispatch(line) {
     case "context":
       showContext();
       return;
+    case "/agents":
+    case "agents":
+      await showAgents();
+      return;
     default:
       await queryEngine.submitMessage(line);
       await refresh();
@@ -131,7 +137,7 @@ function render() {
     console.log(`${colors.gray}${item.createdAt}${colors.reset} ${item.action} ${item.status}`);
   }
   divider();
-  console.log(`${colors.dim}/scan  /incident create  /fix  /deploy  /rollback  /audit  /config  /context  /help  /quit${colors.reset}`);
+  console.log(`${colors.dim}/scan  /incident create  /fix  /deploy  /rollback  /audit  /config  /context  /agents  /help  /quit${colors.reset}`);
   console.log("");
 }
 
@@ -241,6 +247,19 @@ function showContext() {
   console.log(JSON.stringify(stats, null, 2));
 }
 
+async function showAgents() {
+  section("Agents");
+  for (const agent of agentCoordinator.listAgents()) {
+    console.log(`- ${agent.name}: ${agent.description}`);
+  }
+  section("Recent Agent Tasks");
+  const tasks = await agentCoordinator.listTasks();
+  if (!tasks.length) console.log(`${colors.gray}empty${colors.reset}`);
+  for (const task of tasks.slice(0, 8)) {
+    console.log(`- ${task.id} ${task.status} ${task.agentName} ${task.description}`);
+  }
+}
+
 function help() {
   console.log(`
 Commands:
@@ -253,6 +272,7 @@ Commands:
   /audit             Show audit events
   /config            Show redacted config
   /context           Show latest context budget and memory recall stats
+  /agents            Show specialist agents and recent agent tasks
   natural language   Ask the agent, e.g. "帮我体检" or "支付失败，生成修复任务"
   /refresh           Refresh dashboard
   /quit              Exit

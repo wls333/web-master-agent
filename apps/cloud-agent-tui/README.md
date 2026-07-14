@@ -102,3 +102,13 @@ Context engineering:
 - Approximate token budgets are tracked per turn and visible with `/context`.
 
 See `docs/context-engineering-design.md` for the full design.
+
+Multi-agent coordination:
+
+- Specialist agents are exposed as `agent.*` tools.
+- Coordinator planning decomposes incidents into diagnosis, deployment review, local fix handoff, and verification.
+- Agent task state is persisted under `.lightops/agent-tasks`.
+- Worktree isolation is intentionally deferred to the local Codex/Claude Code bridge.
+- Use `/agents` to inspect available specialists and recent tasks.
+
+See `docs/multi-agent-coordination-design.md` for the full design.
